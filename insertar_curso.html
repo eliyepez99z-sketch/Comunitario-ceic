@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Nuevo Curso - VS Code</title>
+  <!-- Cargamos la librería oficial de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <h2>Registrar Nuevo Curso</h2>
+
+  <form id="formCurso">
+    <div>
+      <label>Nombre del Curso:</label><br>
+      <input type="text" id="nombreCurso" placeholder="Ej: Base de Datos II" required>
+    </div><br>
+
+    <div>
+      <label>Descripción:</label><br>
+      <textarea id="descripcionCurso" placeholder="Descripción breve del contenido" required></textarea>
+    </div><br>
+
+    <div>
+      <label>Cupos Totales:</label><br>
+      <input type="number" id="cuposTotales" min="1" value="30" required>
+    </div><br>
+
+    <button type="submit">Guardar Curso en Supabase</button>
+  </form>
+
+  <script>
+    // Credenciales de Supabase
+    const SUPABASE_URL = 'https://fzvjhdeodahtxoolxzkx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dmpoZGVvZGFodHhvb2x4emt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODc5NjYsImV4cCI6MjEwMzc2Mzk2Nn0.CdAgxnvtMwsv1ryyrqpEdmS8ShqQMLALz5_ZwHsjSHc'; 
+
+    // Inicialización del cliente de Supabase desde el CDN global
+    const { createClient } = window.supabase;
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Escuchar el evento cuando se envía el formulario
+    document.getElementById('formCurso').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombreCurso').value;
+      const descripcion = document.getElementById('descripcionCurso').value;
+      const cupos = parseInt(document.getElementById('cuposTotales').value);
+
+      // Insertar en la tabla 'cursos'
+      const { data, error } = await client
+        .from('cursos')
+        .insert([
+          {
+            nombre: nombre,
+            descripcion: descripcion,
+            cupos_totales: cupos,
+            cupos_disponibles: cupos,
+            activo: true
+          }
+        ])
+        .select();
+
+      if (error) {
+        alert('Error al insertar el curso: ' + error.message);
+        console.error('Error detallado:', error);
+      } else {
+        alert('¡Curso registrado exitosamente desde VS Code!');
+        document.getElementById('formCurso').reset();
+      }
+    });
+  </script>
+</body>
+</html>
