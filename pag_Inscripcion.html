@@ -302,6 +302,11 @@
             <input type="date" id="fechaNaciminto">
             
         </div>
+        
+        <div class="form-group">
+            <label for="edad">Edad *</label>
+            <input type="number" id="edad" placeholder="Ej: 18" min="5" max="100" required>
+        </div>
 
         <div class="form-group">
             <label > Sexo *</label>
@@ -375,7 +380,19 @@
                 <option value="">Selecciona un Curso</option>
             </select>
         </div>
-        
+        <h3 class="form-section-title">5. Documentos Requeridos</h3>
+
+        <div class="form-group">
+            <label for="fotoCarnet">Fotografía Tipo Carnet *</label>
+            <input type="file" id="fotoCarnet" accept="image/png, image/jpeg, image/jpg" required>
+            <small style="color: #5a6a85; font-size: 0.8rem;">Formatos aceptados: JPG o PNG (Máx. 2MB)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="fotoCedula">Foto o Escaneo de la Cédula de Identidad *</label>
+            <input type="file" id="fotoCedula" accept="image/png, image/jpeg, image/jpg, application/pdf" required>
+            <small style="color: #5a6a85; font-size: 0.8rem;">Formatos aceptados: Imagen o PDF</small>
+        </div>
 
         <button type="submit" id="btnSubmit" class="btn-submit">Enviar Solicitud de Inscripción</button>
     </form>
