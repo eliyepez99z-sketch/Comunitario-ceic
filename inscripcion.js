@@ -47,20 +47,59 @@ async function cargarCursos() {
     }
 }
 
-// 2. Registrar el estudiante y enviar solicitud de inscripción
+// Función auxiliar para subir archivos al Storage de Supabase
+async function subirArchivo(file, carpeta) {
+    if (!file) return null;
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36.substring(2, 9))}.${fileExt}`;
+    const filePath = `${carpeta}/${fileName}`;
+
+    const { data, error } = await db.storage
+        .from('documentos-inscripcion') // Nombre de tu Bucket en Supabase Storage
+        .upload(filePath, file);
+
+    if (error) throw error;
+
+    // Obtener la URL pública del archivo subido
+    const { data: publicUrlData } = db.storage
+        .from('documentos-inscripcion')
+        .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
+}
+
+// 2. Registrar el estudiante, subir archivos y enviar solicitud de inscripción
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     btnSubmit.disabled = true;
-    btnSubmit.textContent = "Procesando inscripción...";
+    btnSubmit.textContent = "Procesando inscripción y subiendo archivos...";
     ocultarAlerta();
 
+    // Captura de todos los campos del formulario HTML
     const cedula = document.getElementById('cedula').value.trim();
     const nombre = document.getElementById('nombre').value.trim();
     const apellido = document.getElementById('apellido').value.trim();
+    const fechaNacimiento = document.getElementById('fechaNaciminto').value;
+    const edad = parseInt(document.getElementById('edad').value);
+    const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
+    
     const email = document.getElementById('email').value.trim();
     const telefono = document.getElementById('telefono').value.trim();
+    const whatsApp = document.getElementById('whatsApp').value.trim();
+    
+    const direccion = document.getElementById('direccion').value.trim();
+    const municipio = document.getElementById('municipio').value.trim();
+    const estado = document.getElementById('estado').value.trim();
+    
+    const nivelEducativo = document.getElementById('nivelEducativo').value;
+    const institucion = document.getElementById('institucion').value.trim();
     const cursoId = selectCurso.value;
+
+    // Captura de los archivos físicos
+    const fileFotoCarnet = document.getElementById('fotoCarnet').files[0];
+    const fileCedula = document.getElementById('fotoCedula').files[0];
 
     if (!cursoId) {
         mostrarAlerta('Por favor selecciona un curso válido.', 'warning');
@@ -70,7 +109,18 @@ form.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Comprobar si el estudiante ya está registrado en la BD por su cédula
+        // 1. Subir archivos a Supabase Storage primero
+        let urlFotoCarnet = null;
+        let urlFotoCedula = null;
+
+        if (fileFotoCarnet) {
+            urlFotoCarnet = await subirArchivo(fileFotoCarnet, 'fotos_carnet');
+        }
+        if (fileCedula) {
+            urlFotoCedula = await subirArchivo(fileCedula, 'fotos_cedula');
+        }
+
+        // 2. Comprobar si el estudiante ya está registrado en la BD por su cédula
         let { data: estudianteExistente, error: errConsulta } = await db
             .from('estudiantes')
             .select('id')
@@ -82,16 +132,37 @@ form.addEventListener('submit', async (e) => {
 
         if (estudianteExistente && estudianteExistente.length > 0) {
             estudianteId = estudianteExistente[0].id;
+            
+            // Opcional: Actualizar datos y URLs de documentos si ya existía
+            await db.from('estudiantes').update({
+                nombre, apellido, fecha_nacimiento: fechaNacimiento, edad, sexo,
+                email, telefono, whatsapp: whatsApp, direccion, municipio, estado,
+                nivel_educativo: nivelEducativo, institucion,
+                foto_carnet_url: urlFotoCarnet || undefined,
+                foto_cedula_url: urlFotoCedula || undefined
+            }).eq('id', estudianteId);
+
         } else {
-            // Registrar nuevo estudiante
+            // Registrar nuevo estudiante con todos sus datos extendidos y URLs de archivos
             const { data: nuevoEstudiante, error: errRegistro } = await db
                 .from('estudiantes')
                 .insert([{
                     documento_identidad: cedula,
-                    nombre: nombre,
-                    apellido: apellido,
-                    email: email,
-                    telefono: telefono
+                    nombre,
+                    apellido,
+                    fecha_nacimiento: fechaNacimiento,
+                    edad,
+                    sexo,
+                    email,
+                    telefono,
+                    whatsapp: whatsApp,
+                    direccion,
+                    municipio,
+                    estado,
+                    nivel_educativo: nivelEducativo,
+                    institucion,
+                    foto_carnet_url: urlFotoCarnet,
+                    foto_cedula_url: urlFotoCedula
                 }])
                 .select();
 
@@ -99,7 +170,7 @@ form.addEventListener('submit', async (e) => {
             estudianteId = nuevoEstudiante[0].id;
         }
 
-        // Crear la inscripción en estado 'Pendiente'
+        // 3. Crear la inscripción en estado 'Pendiente' vinculada al curso
         const { error: errInscripcion } = await db
             .from('inscripciones')
             .insert([{
@@ -115,7 +186,7 @@ form.addEventListener('submit', async (e) => {
                 throw errInscripcion;
             }
         } else {
-            // AQUÍ SE ABRE LA PANTALLA EMERGENTE AL FINALIZAR
+            // ¡Todo salió bien! Mostrar modal de éxito
             mostrarModalExito();
             form.reset();
             cargarCursos();
