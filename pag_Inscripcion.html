@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripciones en Línea - CEIC IUNAV</title>
+    <!-- Cliente oficial de Supabase via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --color-primary: #2b5278;      /* Azul principal del marco y estructura */
+            --color-primary-dark: #1d3557; /* Azul oscuro para hover/títulos */
+            --color-accent: #8b262a;       /* Rojo vino del escudo/libro */
+            --color-accent-hover: #6e1d21; /* Rojo vino oscuro */
+            --color-bg: #f4f6f9;           /* Fondo gris claro neutro */
+            --color-card: #ffffff;         /* Fondo de tarjeta blanco */
+            --color-text: #2c3e50;         /* Texto principal */
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--color-card);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(43, 82, 120, 0.12);
+            width: 100%;
+            max-width: 550px;
+            padding: 35px 30px;
+            border-top: 6px solid var(--color-primary);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 12px;
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            color: var(--color-primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            color: #5a6a85;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--color-primary-dark);
+            font-size: 0.9rem;
+        }
+
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            background-color: #fafbfc;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(43, 82, 120, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.25s ease, transform 0.1s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(139, 38, 42, 0.25);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .btn-submit:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #alert-box {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.93rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .alert-error {
+            background-color: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #fad2cf;
+        }
+
+        .alert-warning {
+            background-color: #fef7e0;
+            color: #b06000;
+            border: 1px solid #feefc3;
+        }
+        
+        /* Corregido: punto agregado al selector de clase */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: popup 0.3s ease-out forwards;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #e6f4ea;
+            color: #137333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0 auto 15px auto;
+        }
+
+        .modal-content h2 {
+            color: #2b5278;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .modal-content p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .btn-modal {
+            background-color: #8b262a;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-modal:hover {
+            background-color: #6e1d21;
+        }
+
+        @keyframes popup {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="logo.png" alt="Logo CEIC IUNAV" class="logo">
+        <h1>Centro Educativo Integral Comunitario</h1>
+        <p>Sistema de Inscripción en Línea (CEIC IUNAV)</p>
+    </div>
+
+    <form id="inscriptionForm">
+        <div class="form-group">
+            <label for="cedula">Cédula / Documento de Identidad *</label>
+            <input type="text" id="cedula" placeholder="Ej: V-28020801" required>
+        </div>
+
+        <div class="form-group">
+            <label for="nombre">Nombre *</label>
+            <input type="text" id="nombre" placeholder="Tu nombre" required>
+        </div>
+
+        <div class="form-group">
+            <label for="apellido">Apellido *</label>
+            <input type="text" id="apellido" placeholder="Tu apellido" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo Electrónico *</label>
+            <input type="email" id="email" placeholder="correo@ejemplo.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono de Contacto</label>
+            <input type="tel" id="telefono" placeholder="Ej: 04121234567">
+        </div>
+
+        <div class="form-group">
+            <label for="curso">Selecciona el Curso *</label>
+            <select id="curso" required>
+                <option value="">Cargando oferta académica...</option>
+            </select>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-submit">Enviar Solicitud de Inscripción</button>
+    </form>
+
+    <div id="alert-box"></div>
+</div>
+
+<!-- Modal ubicado FUERA del formulario y al final del body -->
+<div id="modal-exito" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-icon">✓</div>
+        <h2>¡Inscripción Exitosa!</h2>
+        <p>Proceso de inscripción finalizado con éxito.</p>
+        <button type="button" class="btn-modal" onclick="cerrarModal()">Aceptar</button>
+    </div>
+</div>
+
+<script src="pag_principal.js"></script>
+
+</body>
+</html>
