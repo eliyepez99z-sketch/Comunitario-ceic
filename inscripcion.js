@@ -1,5 +1,5 @@
 // Configuración de la conexión a Supabase
-const SUPABASE_URL = ":/https/fzvjhdeodahtxoolxzkx.supabase.co";
+const SUPABASE_URL = "https://fzvjhdeodahtxoolxzkx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dmpoZGVvZGFodHhvb2x4emt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODc5NjYsImV4cCI6MjEwMzc2Mzk2Nn0.CdAgxnvtMwsv1ryyrqpEdmS8ShqQMLALz5_ZwHsjSHc";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
