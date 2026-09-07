@@ -47,23 +47,23 @@ async function cargarCursos() {
     }
 }
 
-// Función auxiliar para subir archivos al Storage de Supabase
+// Función auxiliar para subir archivos al Storage de Supabase (CORREGIDO AL BUCKET 'inscritos')
 async function subirArchivo(file, carpeta) {
     if (!file) return null;
     
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}_${Math.random().toString(36.substring(2, 9))}.${fileExt}`;
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
     const filePath = `${carpeta}/${fileName}`;
 
     const { data, error } = await db.storage
-        .from('documentos-inscripcion') // Nombre de tu Bucket en Supabase Storage
+        .from('inscritos') // Corregido al nombre exacto de tu bucket
         .upload(filePath, file);
 
     if (error) throw error;
 
     // Obtener la URL pública del archivo subido
     const { data: publicUrlData } = db.storage
-        .from('documentos-inscripcion')
+        .from('inscritos') // Corregido al nombre exacto de tu bucket
         .getPublicUrl(filePath);
 
     return publicUrlData.publicUrl;
@@ -81,7 +81,7 @@ form.addEventListener('submit', async (e) => {
     const cedula = document.getElementById('cedula').value.trim();
     const nombre = document.getElementById('nombre').value.trim();
     const apellido = document.getElementById('apellido').value.trim();
-    const fechaNacimiento = document.getElementById('fechaNaciminto').value;
+    const fechaNacimiento = document.getElementById('fechaNacimiento').value; // Corregido el ID
     const edad = parseInt(document.getElementById('edad').value);
     const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
     
@@ -133,7 +133,7 @@ form.addEventListener('submit', async (e) => {
         if (estudianteExistente && estudianteExistente.length > 0) {
             estudianteId = estudianteExistente[0].id;
             
-            // Opcional: Actualizar datos y URLs de documentos si ya existía
+            // Actualizar datos y URLs de documentos si ya existía
             await db.from('estudiantes').update({
                 nombre, apellido, fecha_nacimiento: fechaNacimiento, edad, sexo,
                 email, telefono, whatsapp: whatsApp, direccion, municipio, estado,
