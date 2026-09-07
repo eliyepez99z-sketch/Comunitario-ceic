@@ -23,7 +23,7 @@ async function cargarCursos() {
     try {
         const { data, error } = await db
             .from('cursos')
-            .select('id, nombre, cupos_disponibles')
+            .select('id, nombres, cupos_disponibles')
             .eq('activo', true)
             .gt('cupos_disponibles', 0);
 
@@ -79,8 +79,8 @@ form.addEventListener('submit', async (e) => {
 
     // Captura de todos los campos del formulario HTML
     const cedula = document.getElementById('cedula').value.trim();
-    const nombre = document.getElementById('nombre').value.trim();
-    const apellido = document.getElementById('apellido').value.trim();
+    const nombre = document.getElementById('nombres').value.trim();
+    const apellido = document.getElementById('apellidos').value.trim();
     const fechaNacimiento = document.getElementById('fechaNacimiento').value; // Corregido el ID
     const edad = parseInt(document.getElementById('edad').value);
     const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
