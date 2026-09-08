@@ -18,33 +18,29 @@ function cerrarModal() {
     document.getElementById('modal-exito').style.display = 'none';
 }
 
-// 1. Obtener los cursos activos y con cupos desde Supabase (Corregido select a 'nombre')
+// 1. Obtener los cursos desde Supabase
 async function cargarCursos() {
     try {
         const { data, error } = await db
             .from('cursos')
-            .select('id, nombre, cupos_disponibles')
-            .eq('activo', true)
-            .gt('cupos_disponibles', 0);
+            .select('id, nombre, cupos_disponibles');
 
         if (error) throw error;
 
-        selectCurso.innerHTML = '<option value="">-- Selecciona un curso --</option>';
+        console.log("Cursos recibidos desde Supabase:", data);
 
+        selectCurso.innerHTML = '<option value="">Selecciona un Curso</option>';
         if (data && data.length > 0) {
             data.forEach(c => {
                 const option = document.createElement('option');
                 option.value = c.id;
-                option.textContent = `${c.nombre} (${c.cupos_disponibles} cupos disponibles)`;
+                option.textContent = c.nombre;
                 selectCurso.appendChild(option);
             });
-        } else {
-            selectCurso.innerHTML = '<option value="">No hay cursos con cupos disponibles en este momento</option>';
         }
     } catch (err) {
-        mostrarAlerta('Error al obtener la lista de cursos disponibles.', 'error');
-        console.error(err);
-    } 
+        console.error("Error al cargar cursos:", err);
+    }
 }
 
 // Función auxiliar para subir archivos al Storage de Supabase
