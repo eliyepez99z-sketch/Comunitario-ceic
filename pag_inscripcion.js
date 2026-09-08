@@ -56,7 +56,7 @@ async function subirArchivo(file, carpeta) {
     const filePath = `${carpeta}/${fileName}`;
 
     const { data, error } = await db.storage
-        .from('inscritos')
+        .from('ISCRITOS')
         .upload(filePath, file);
 
     if (error) throw error;
