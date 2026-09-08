@@ -44,7 +44,7 @@ async function cargarCursos() {
     } catch (err) {
         mostrarAlerta('Error al obtener la lista de cursos disponibles.', 'error');
         console.error(err);
-    }
+    } 
 }
 
 // Función auxiliar para subir archivos al Storage de Supabase
