@@ -18,12 +18,12 @@ function cerrarModal() {
     document.getElementById('modal-exito').style.display = 'none';
 }
 
-// 1. Obtener los cursos activos y con cupos desde Supabase
+// 1. Obtener los cursos activos y con cupos desde Supabase (Corregido select a 'nombre')
 async function cargarCursos() {
     try {
         const { data, error } = await db
             .from('cursos')
-            .select('id, nombres, cupos_disponibles')
+            .select('id, nombre, cupos_disponibles')
             .eq('activo', true)
             .gt('cupos_disponibles', 0);
 
@@ -47,7 +47,7 @@ async function cargarCursos() {
     }
 }
 
-// Función auxiliar para subir archivos al Storage de Supabase (CORREGIDO AL BUCKET 'inscritos')
+// Función auxiliar para subir archivos al Storage de Supabase
 async function subirArchivo(file, carpeta) {
     if (!file) return null;
     
@@ -56,14 +56,14 @@ async function subirArchivo(file, carpeta) {
     const filePath = `${carpeta}/${fileName}`;
 
     const { data, error } = await db.storage
-        .from('inscritos') // Corregido al nombre exacto de tu bucket
+        .from('inscritos')
         .upload(filePath, file);
 
     if (error) throw error;
 
     // Obtener la URL pública del archivo subido
     const { data: publicUrlData } = db.storage
-        .from('inscritos') // Corregido al nombre exacto de tu bucket
+        .from('inscritos')
         .getPublicUrl(filePath);
 
     return publicUrlData.publicUrl;
@@ -81,7 +81,7 @@ form.addEventListener('submit', async (e) => {
     const cedula = document.getElementById('cedula').value.trim();
     const nombre = document.getElementById('nombres').value.trim();
     const apellido = document.getElementById('apellidos').value.trim();
-    const fechaNacimiento = document.getElementById('fechaNacimiento').value; // Corregido el ID
+    const fechaNacimiento = document.getElementById('fechaNacimiento').value;
     const edad = parseInt(document.getElementById('edad').value);
     const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
     
