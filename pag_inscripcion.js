@@ -63,7 +63,7 @@ async function subirArchivo(file, carpeta) {
 
     // Obtener la URL pública del archivo subido
     const { data: publicUrlData } = db.storage
-        .from('inscritos')
+        .from('INSCRITOS')
         .getPublicUrl(filePath);
 
     return publicUrlData.publicUrl;
