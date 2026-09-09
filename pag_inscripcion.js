@@ -1,8 +1,9 @@
-// Configuración de la conexión a Supabase
+// Configuración de la conexión a Supabase (Cliente v2)
 const SUPABASE_URL = "https://fzvjhdeodahtxoolxzkx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmZtaG1sam5penB3bGxhZ3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODk5NTksImV4cCI6MjEwMzc2NTk1OX0.Ws7m10M3Jzk4EUo0u2IgxW_KL9uSHdBHupzzxmORG8c";
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const selectCurso = document.getElementById('curso');
 const form = document.getElementById('inscriptionForm');
@@ -51,12 +52,11 @@ async function subirArchivo(file, carpeta) {
     const filePath = `${carpeta}/${fileName}`;
 
     const { data, error } = await db.storage
-        .from('INSCRITOS') // Corregido con la 'N'
+        .from('INSCRITOS')
         .upload(filePath, file);
 
     if (error) throw error;
 
-    // Obtener la URL pública del archivo subido
     const { data: publicUrlData } = db.storage
         .from('INSCRITOS')
         .getPublicUrl(filePath);
@@ -64,7 +64,7 @@ async function subirArchivo(file, carpeta) {
     return publicUrlData.publicUrl;
 }
 
-// 2. Registrar el estudiante, subir archivos y enviar solicitud de inscripción
+// Registrar el estudiante, subir archivos y enviar solicitud de inscripción
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -72,7 +72,6 @@ form.addEventListener('submit', async (e) => {
     btnSubmit.textContent = "Procesando inscripción y subiendo archivos...";
     ocultarAlerta();
 
-    // Captura de todos los campos del formulario HTML
     const cedula = document.getElementById('cedula').value.trim();
     const nombre = document.getElementById('nombres').value.trim();
     const apellido = document.getElementById('apellidos').value.trim();
@@ -92,7 +91,6 @@ form.addEventListener('submit', async (e) => {
     const institucion = document.getElementById('institucion').value.trim();
     const cursoId = selectCurso.value;
 
-    // Captura de los archivos físicos
     const fileFotoCarnet = document.getElementById('fotoCarnet').files[0];
     const fileCedula = document.getElementById('fotoCedula').files[0];
 
@@ -104,7 +102,6 @@ form.addEventListener('submit', async (e) => {
     }
 
     try {
-        // 1. Subir archivos a Supabase Storage primero
         let urlFotoCarnet = null;
         let urlFotoCedula = null;
 
@@ -115,7 +112,6 @@ form.addEventListener('submit', async (e) => {
             urlFotoCedula = await subirArchivo(fileCedula, 'fotos_cedula');
         }
 
-        // 2. Comprobar si el estudiante ya está registrado en la BD por su cédula
         let { data: estudianteExistente, error: errConsulta } = await db
             .from('estudiantes')
             .select('id')
@@ -128,7 +124,6 @@ form.addEventListener('submit', async (e) => {
         if (estudianteExistente && estudianteExistente.length > 0) {
             estudianteId = estudianteExistente[0].id;
             
-            // Actualizar datos y URLs de documentos si ya existía
             await db.from('estudiantes').update({
                 nombre, apellido, fecha_nacimiento: fechaNacimiento, edad, sexo,
                 email, telefono, whatsapp: whatsApp, direccion, municipio, estado,
@@ -138,7 +133,6 @@ form.addEventListener('submit', async (e) => {
             }).eq('id', estudianteId);
 
         } else {
-            // Registrar nuevo estudiante con todos sus datos extendidos y URLs de archivos
             const { data: nuevoEstudiante, error: errRegistro } = await db
                 .from('estudiantes')
                 .insert([{
@@ -165,7 +159,6 @@ form.addEventListener('submit', async (e) => {
             estudianteId = nuevoEstudiante[0].id;
         }
 
-        // 3. Crear la inscripción en estado 'Pendiente' vinculada al curso
         const { error: errInscripcion } = await db
             .from('inscripciones')
             .insert([{
@@ -181,7 +174,6 @@ form.addEventListener('submit', async (e) => {
                 throw errInscripcion;
             }
         } else {
-            // ¡Todo salió bien! Mostrar modal de éxito
             mostrarModalExito();
             form.reset();
             cargarCursos();
@@ -206,5 +198,4 @@ function ocultarAlerta() {
     alertBox.style.display = 'none';
 }
 
-// Cargar los cursos al abrir la página
 cargarCursos();
