@@ -72,24 +72,25 @@ form.addEventListener('submit', async (e) => {
     btnSubmit.textContent = "Procesando inscripción y subiendo archivos...";
     ocultarAlerta();
 
-    const cedula = document.getElementById('cedula').value.trim();
-    const nombre = document.getElementById('nombres').value.trim();
-    const apellido = document.getElementById('apellidos').value.trim();
-    const fechaNacimiento = document.getElementById('fechaNacimiento').value;
-    const edad = parseInt(document.getElementById('edad').value);
-    const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
+    // Captura segura de los campos del formulario (protegida contra nulos)
+    const cedula = document.getElementById('cedula')?.value?.trim() || '';
+    const nombre = document.getElementById('nombres')?.value?.trim() || '';
+    const apellido = document.getElementById('apellidos')?.value?.trim() || '';
+    const fechaNacimiento = document.getElementById('fechaNacimiento')?.value || '';
+    const edad = parseInt(document.getElementById('edad')?.value) || 0;
+    const sexo = document.querySelector('input[name="sexo"]:checked')?.value || '';
     
-    const email = document.getElementById('email').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const whatsApp = document.getElementById('whatsApp').value.trim();
+    const email = document.getElementById('email')?.value?.trim() || '';
+    const telefono = document.getElementById('telefono')?.value?.trim() || '';
+    const whatsApp = document.getElementById('whatsApp')?.value?.trim() || '';
     
-    const direccion = document.getElementById('direccion').value.trim();
-    const municipio = document.getElementById('municipio').value.trim();
-    const estado = document.getElementById('estado').value.trim();
+    const direccion = document.getElementById('direccion')?.value?.trim() || '';
+    const municipio = document.getElementById('municipio')?.value?.trim() || '';
+    const estado = document.getElementById('estado')?.value?.trim() || '';
     
-    const nivelEducativo = document.getElementById('nivelEducativo').value;
-    const institucion = document.getElementById('institucion').value.trim();
-    const cursoId = selectCurso.value;
+    const nivelEducativo = document.getElementById('nivelEducativo')?.value || '';
+    const institucion = document.getElementById('institucion')?.value?.trim() || '';
+    const cursoId = selectCurso?.value || '';
 
     const fileFotoCarnet = document.getElementById('fotoCarnet').files[0];
     const fileCedula = document.getElementById('fotoCedula').files[0];
