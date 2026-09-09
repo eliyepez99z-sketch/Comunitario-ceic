@@ -1,6 +1,6 @@
 // Configuración de la conexión a Supabase (Cliente v2)
 const SUPABASE_URL = "https://fzvjhdeodahtxoolxzkx.supabase.co";
-const SUPABASE_KEY = "eeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmZtaG1sam5penB3bGxhZ3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODk5NTksImV4cCI6MjEwMzc2NTk1OX0.Ws7m10M3Jzk4EUo0u2IgxW_KL9uSHdBHupzzxmORG8cyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmZtaG1sam5penB3bGxhZ3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODk5NTksImV4cCI6MjEwMzc2NTk1OX0.Ws7m10M3Jzk4EUo0u2IgxW_KL9uSHdBHupzzxmORG8ceyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmZtaG1sam5penB3bGxhZ3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODk5NTksImV4cCI6MjEwMzc2NTk1OX0.Ws7m10M3Jzk4EUo0u2IgxW_KL9uSHdBHupzzxmORG8c";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmZtaG1sam5penB3bGxhZ3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODk5NTksImV4cCI6MjEwMzc2NTk1OX0.Ws7m10M3Jzk4EUo0u2IgxW_KL9uSHdBHupzzxmORG8c";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -19,7 +19,7 @@ function cerrarModal() {
     document.getElementById('modal-exito').style.display = 'none';
 }
 
-async function cargarCursos() {
+/* async function cargarCursos() {
     try {
         const { data, error } = await db
             .from('cursos')
@@ -41,7 +41,7 @@ async function cargarCursos() {
     } catch (err) {
         console.error("Error al cargar cursos:", err);
     }
-}
+} */
 
 // Función auxiliar para subir archivos al Storage de Supabase
 async function subirArchivo(file, carpeta) {
