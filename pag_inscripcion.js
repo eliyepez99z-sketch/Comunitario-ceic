@@ -198,4 +198,4 @@ function ocultarAlerta() {
     alertBox.style.display = 'none';
 }
 
-/* cargarCursos(); */
+/* cargarCursos(); */  
