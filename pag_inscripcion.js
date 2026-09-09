@@ -18,7 +18,6 @@ function cerrarModal() {
     document.getElementById('modal-exito').style.display = 'none';
 }
 
-// 1. Obtener los cursos desde Supabase
 async function cargarCursos() {
     try {
         const { data, error } = await db
@@ -27,7 +26,7 @@ async function cargarCursos() {
 
         if (error) throw error;
 
-        console.log("Cursos recibidos desde Supabase:", data);
+        console.log("Cursos recibidos:", data);
 
         selectCurso.innerHTML = '<option value="">Selecciona un Curso</option>';
         if (data && data.length > 0) {
@@ -52,7 +51,7 @@ async function subirArchivo(file, carpeta) {
     const filePath = `${carpeta}/${fileName}`;
 
     const { data, error } = await db.storage
-        .from('ISCRITOS')
+        .from('INSCRITOS') // Corregido con la 'N'
         .upload(filePath, file);
 
     if (error) throw error;
