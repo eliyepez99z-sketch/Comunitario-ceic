@@ -19,7 +19,7 @@ function cerrarModal() {
     document.getElementById('modal-exito').style.display = 'none';
 }
 
-/* async function cargarCursos() {
+async function cargarCursos() {
     try {
         const { data, error } = await db
             .from('cursos')
@@ -41,7 +41,7 @@ function cerrarModal() {
     } catch (err) {
         console.error("Error al cargar cursos:", err);
     }
-} */
+} 
 
 // Función auxiliar para subir archivos al Storage de Supabase
 async function subirArchivo(file, carpeta) {
